@@ -31,7 +31,7 @@ module XiamiFm
       @track = track
       load(track, location)
       start   
-      sleep 60     
+      sleep 240     
     end
 
     def play_progress
