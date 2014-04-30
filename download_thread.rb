@@ -1,11 +1,11 @@
 require 'net/http'
 
-module XiamiFm
+# module XiamiFm
   class DownloadThread
     attr_reader :events, :url, :progress, :total, :file
     
     def initialize(url, filename)
-      @events = Events.new
+      # @events = Events.new
       @url = URI.parse(url)
       @file = File.open(filename, "w")
       @progress = 0
@@ -44,4 +44,4 @@ module XiamiFm
     end
     
   end
-end
+# end
