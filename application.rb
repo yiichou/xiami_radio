@@ -1,65 +1,80 @@
 require 'logger'
+require 'net/http'
 require 'curses'
 
-require_relative 'controllers/player_controller'
+require_relative 'audite'
+require_relative 'download_thread'
+require_relative 'view'
+require_relative 'radio'
+require_relative 'track'
 
-require_relative 'models/collection'
-require_relative 'models/player'
-require_relative 'models/track'
+class XiamiFm
 
-require_relative 'views/player_view'
-
-require_relative 'helpers/events'
-require_relative 'helpers/input'
-require_relative 'helpers/time_helper'
-
-module XiamiFm
-  class Application
-    include Controllers
-    include Models
-    include Views
-
-    def initialize()
-      $stderr.reopen("debug.log", "w")
-      
-      @player_controller = PlayerController.new(PlayerView.new(Curses.cols, 5, 0, 0))
+  def initialize
+    @folder = File.expand_path("./cache")
+    @radio = Radio.new
+    @queue = 0
+    create_player
     
-      @player_controller.events.on(:complete) do
-        puts "end"
-        # @track_controller.next_track
-      end
-
-    end
-    
-    def main
-      track = Track::new({'id'=>'paomo2'})
-      
-      @player_controller.play(track)
-    end
-    
-    def run
-      main
-    end
-    
-    # TODO: look at active controller and send key to active controller instead
-    def handle(key)
-      case key
-      when :left, :right, :space
-        @player_controller.events.trigger(:key, key)
-      end
-    end
-    
-    def stop
-      @stop = true
-    end
-    
-    def stop?
-      @stop == true
-    end
-    
-    def self.logger
-      @logger ||= Logger.new('debug.log')
-    end
-
+    Dir.mkdir(@folder) unless File.exist?(@folder)
   end
+  
+  def list
+    @list = @radio.get_list
+  end
+  
+  def track(hash)
+    @track = Track.new(hash)
+  end
+  
+  def create_player
+    @player = Audite.new
+    @view = View.new
+    @player.events.on(:position_change) do |position|
+      @view.playing(@track, position, File.size?(@file))
+    end
+
+    @player.events.on(:complete) do
+      puts "COMPLETE"
+      exit
+    end
+    
+    @view.refresh
+  end
+  
+  def play
+    track(list[@queue])
+    
+    @file = "#{@folder}/tmp.mp3"
+    @download = DownloadThread.new(@track.location, @file)
+    
+    sleep(0.1)
+    
+    @player.load(@file)
+    @track.update(@player.length_in_seconds, @download.total, @player.length_in_seconds, File.size?(@file))
+    @player.start_stream
+    
+    while c = Curses.getch
+      case c
+      when Curses::KEY_LEFT
+        @player.rewind
+      when Curses::KEY_RIGHT
+        @player.forward
+      when ' '
+        @player.toggle
+      end
+    end
+    
+    @player.thread.join
+  end
+  
+  def next
+    @queue += 1
+    play
+  end
+  
+  def self.logger
+    @logger ||= Logger.new('debug.log')
+  end
+
 end
