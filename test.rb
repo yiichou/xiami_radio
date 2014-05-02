@@ -1,21 +1,25 @@
-require_relative './a'
-require_relative 'helpers/download_thread'
+require 'uri'
 
-player = Audite.new
+en_url = "6hAFlm%F4jIcDph4%pLFZ4h1Et%mei21th46Wj%o2a2g1Fz2Mt23..FjKa2OPb5O5WiATZqEpF.xchq7GS3wcEa2SiFxLrJ%%fio%dGXiUYtipFxQ7Odk%32iam2TlRUGxjOzkRquHyQ5"
 
-player.events.on(:position_change) do |pos|
-  puts "POSITION: #{pos} seconds  level #{player.level}"
+key = en_url[0].to_i
+tmp_url = en_url[1..en_url.length]
+fr = tmp_url.length.divmod(key)
+ll = []
+lu = []
+bu = ""
+
+key.times do |i|
+  ll << (fr[1] > 0 ? fr[0] + 1 : fr[0])
+  lu << tmp_url[0,ll[i]]
+  tmp_url = tmp_url[ll[i]..tmp_url.length]
+  fr[1] -= 1
 end
 
-player.events.on(:complete) do
-  puts "COMPLETE"
+ll[0].times do |i|
+  lu.each do |piece|
+    piece[i] && bu << piece[i] 
+  end
 end
 
-location = 'http://m5.file.xiami.com/712/55712/435293/1771115301_3944660_l.mp3?auth_key=4eb62d1cd78e281a243efeee2283cd08-1407513600-0-null'
-file = './cache/test.mp3'
-
-@download = DownloadThread.new(location, file)
-
-# player.load(file)
-# player.start_stream
-# player.thread.join
+URI.decode(bu).gsub("^","0")

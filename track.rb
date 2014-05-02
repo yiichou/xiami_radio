@@ -1,52 +1,59 @@
+require 'uri'
+
 class Track
   def initialize(track)
     @track = track
   end
   
-  def song_id
-    @track['song_id']
-  end
-  
-  def singers
-    @track['singers']
-  end
-  
-  def name
-    @track['name']
-  end
-  
-  def location
-    @track['location']
-  end
-  
   def title
-    @track['title']
+    @track[:title]
   end
   
-  def artist_name
-    @track['artist_name']
+  def song_id
+    @track[:song_id]
   end
   
-  def lyric
-    @track['lyric']
+  def album_name
+    @track[:album_name]
   end
   
-  def update(total_seconds, total_size = nil, piece_seconds = nil, piece_size = nil)
-    @track['size'] = total_size
-    
-    if total_seconds < 10
-      @track['duration'] = total_size / piece_size * piece_seconds
-    else
-      @track['duration'] = total_seconds
-    end
+  def artist
+    @track[:artist]
+  end
+  
+  def location(url = nil)
+    @track[:location] = url if url
+    de_url(@track[:location])
   end
   
   def duration
-    @track['duration']
+    @track[:length]
   end
   
-  def size
-    @track['size']
+  protected
+  
+  def de_url(location)
+    key = location[0].to_i
+    tmp_url = location[1..location.length]
+    fr = tmp_url.length.divmod(key)
+    ll = []
+    lu = []
+    true_url = ""
+
+    key.times do |i|
+      ll << (fr[1] > 0 ? fr[0] + 1 : fr[0])
+      lu << tmp_url[0,ll[i]]
+      tmp_url = tmp_url[ll[i]..tmp_url.length]
+      fr[1] -= 1
+    end
+
+    ll[0].times do |i|
+      lu.each do |piece|
+        piece[i] && true_url << piece[i] 
+      end
+    end
+
+    URI.decode(true_url).gsub("^","0")
   end
   
 end

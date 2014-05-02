@@ -20,23 +20,29 @@ class XiamiFm
   end
   
   def list
-    @list = @radio.get_list
+    @list = @radio.get
+    exit if ! @list
+    
+    @list
   end
   
   def track(hash)
     @track = Track.new(hash)
+    
+    # hd_url = @radio.get_hd(@track.song_id)
+    # @track.location(hd_url)
   end
   
   def create_player
     @player = Audite.new
     @view = View.new
     @player.events.on(:position_change) do |position|
-      @view.playing(@track, position, File.size?(@file))
+      @view.playing(@track, position, @download.total, File.size?(@file))
     end
 
     @player.events.on(:complete) do
       puts "COMPLETE"
-      exit
+      self.next
     end
     
     @view.refresh
@@ -48,10 +54,7 @@ class XiamiFm
     @file = "#{@folder}/tmp.mp3"
     @download = DownloadThread.new(@track.location, @file)
     
-    sleep(0.1)
-    
     @player.load(@file)
-    @track.update(@player.length_in_seconds, @download.total, @player.length_in_seconds, File.size?(@file))
     @player.start_stream
     
     while c = Curses.getch
