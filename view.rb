@@ -4,7 +4,7 @@ class View
   def initialize
   end
   
-  def playing(track, position, size, process)
+  def playing(track, position, size, process, &block)
     p = (position / track.duration.to_f * Curses.cols).ceil
     d = (process / size.to_f * Curses.cols).ceil - p
     Curses.clear

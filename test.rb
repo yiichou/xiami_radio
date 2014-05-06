@@ -1,25 +1,15 @@
-require 'uri'
+# encoding : utf-8
+require 'nokogiri'
+require 'open-uri'
 
-en_url = "6hAFlm%F4jIcDph4%pLFZ4h1Et%mei21th46Wj%o2a2g1Fz2Mt23..FjKa2OPb5O5WiATZqEpF.xchq7GS3wcEa2SiFxLrJ%%fio%dGXiUYtipFxQ7Odk%32iam2TlRUGxjOzkRquHyQ5"
+#example：baidu encoding：GB2312
 
-key = en_url[0].to_i
-tmp_url = en_url[1..en_url.length]
-fr = tmp_url.length.divmod(key)
-ll = []
-lu = []
-bu = ""
-
-key.times do |i|
-  ll << (fr[1] > 0 ? fr[0] + 1 : fr[0])
-  lu << tmp_url[0,ll[i]]
-  tmp_url = tmp_url[ll[i]..tmp_url.length]
-  fr[1] -= 1
-end
-
-ll[0].times do |i|
-  lu.each do |piece|
-    piece[i] && bu << piece[i] 
-  end
-end
-
-URI.decode(bu).gsub("^","0")
+html=open("http://dota2.uuu9.com/List/List_7609.shtml").read
+html = html.gsub(/\<\!--*--\>/, "")
+puts html
+# charset=Nokogiri::HTML(html).meta_encoding#！有些网页没有定义charset则不适用
+# puts charset
+# html.force_encoding(charset)
+# html.encode!("utf-8", :undef => :replace, :replace => "?", :invalid => :replace)
+# doc = Nokogiri::HTML.parse html
+# puts doc

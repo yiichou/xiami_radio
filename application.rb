@@ -29,15 +29,15 @@ class XiamiFm
   def track(hash)
     @track = Track.new(hash)
     
-    # hd_url = @radio.get_hd(@track.song_id)
-    # @track.location(hd_url)
+    hd_url = @radio.get_hd(@track.song_id)
+    @track.location(hd_url)
   end
   
   def create_player
     @player = Audite.new
     @view = View.new
     @player.events.on(:position_change) do |position|
-      @view.playing(@track, position, @download.total, File.size?(@file))
+      @view.playing(@track, position, @download.total, File.size?(@file), self.padding)
     end
 
     @player.events.on(:complete) do
@@ -63,6 +63,9 @@ class XiamiFm
         @player.rewind
       when Curses::KEY_RIGHT
         @player.forward
+      when Curses::KEY_DOWN
+        @player.stop_stream
+        self.next
       when ' '
         @player.toggle
       end

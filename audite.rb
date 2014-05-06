@@ -86,10 +86,8 @@ class Audite
     if @active
       @active = false
       @thread = nil unless @thread.alive?
-      unless @stream.stopped?
-        @stream.stop
-        events.trigger(:toggle, @active)
-      end
+      @stream.stop
+      events.trigger(:toggle, @active)
     end
   end
  
