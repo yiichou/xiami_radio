@@ -26,7 +26,6 @@ class Audite
     @buffer_size = buffer_size
     @events = Events.new
     @stream = Portaudio.new(@buffer_size)
-    @song_list = []
   end
  
   def start_thread
@@ -44,7 +43,7 @@ class Audite
  
   def process(status)
     if [:done, :need_more].include? status
-      request_next_song
+      @active = false
       events.trigger(:complete)
     else
       events.trigger(:position_change, position)
@@ -53,19 +52,6 @@ class Audite
   rescue => e
     $stderr.puts e.message
     $stderr.puts e.backtrace
-  end
- 
-  def current_song_name
-    File.basename mp3.file
-  end
- 
-  def request_next_song
-    if songs_in_queue?
-      set_current_song
-      start_stream
-    else
-      stop_stream
-    end
   end
  
   def close
@@ -86,8 +72,10 @@ class Audite
     if @active
       @active = false
       @thread = nil unless @thread.alive?
-      @stream.stop
-      events.trigger(:toggle, @active)
+      # unless @stream.stopped?
+        @stream.stop
+        events.trigger(:toggle, @active)
+      # end
     end
   end
  
@@ -99,31 +87,14 @@ class Audite
     end
   end
  
-  def load(files)
-    files = [] << files unless Array === files
-    files.each {|file| queue file }
-    set_current_song
+  def load(file)
+    @file = file
+    @mp3 = Mpg123.new(file)
+    start_thread
   end
  
   def song_loaded?
     !@mp3.nil?
-  end
- 
-  def set_current_song
-    @mp3 = song_list.shift
-    start_thread
-  end
- 
-  def queue song
-    @song_list << Mpg123.new(song)
-  end
- 
-  def queued_songs
-    @song_list.map {|s| File.basename s.file }
-  end
- 
-  def songs_in_queue?
-    !@song_list.empty?
   end
  
   def time_per_frame
@@ -184,4 +155,5 @@ class Audite
   def forward(seconds = 2)
     seek(position + seconds)
   end
+  
 end

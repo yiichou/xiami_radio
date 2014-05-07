@@ -20,7 +20,7 @@ class XiamiFm
   end
   
   def list
-    @list = @radio.get
+    @list ||= @radio.get
     exit if ! @list
     
     @list
@@ -37,15 +37,25 @@ class XiamiFm
     @player = Audite.new
     @view = View.new
     @player.events.on(:position_change) do |position|
-      @view.playing(@track, position, @download.total, File.size?(@file), self.padding)
+      down_rate = @download.progress / @download.total.to_f
+      play_rate = position / @track.duration.to_f
+      
+      if down_rate - play_rate < 0.02 && down_rate < 0.98
+        @player.toggle
+        sleep 2
+        @player.toggle
+      end
+      
+      @view.playing(@track, position, down_rate)
     end
 
     @player.events.on(:complete) do
-      puts "COMPLETE"
+      Thread.start do
+        @radio.record(@track.song_id)
+      end
       self.next
     end
-    
-    @view.refresh
+
   end
   
   def play
@@ -66,6 +76,8 @@ class XiamiFm
       when Curses::KEY_DOWN
         @player.stop_stream
         self.next
+      when 'l'
+        @radio.fav(@track.song_id)
       when ' '
         @player.toggle
       end
@@ -75,6 +87,7 @@ class XiamiFm
   end
   
   def next
+    @download.stop
     @queue += 1
     play
   end

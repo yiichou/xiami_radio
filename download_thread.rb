@@ -11,7 +11,7 @@ class DownloadThread
   end
   
   def start!
-    Thread.start do
+    @thread = Thread.start do
       begin
         log :start
         Net::HTTP.get_response(@url) do |res|
@@ -36,6 +36,13 @@ class DownloadThread
     
     self
   end
+  
+  def stop
+    @thread && @thread.exit
+    @thread = nil
+    File.delete(@file)
+  end
+    
   
   def log(s)
     XiamiFm.logger.debug("DownloadThread #{s}")

@@ -3,6 +3,7 @@ require 'uri'
 class Track
   def initialize(track)
     @track = track
+    File.new('track.txt','wb') << @track
   end
   
   def title
@@ -27,7 +28,33 @@ class Track
   end
   
   def duration
-    @track[:length]
+    duration = @track[:length].to_i + 1
+  end
+  
+  def reason
+    Reason.new(@track[:reason])
+  end
+  
+  class Reason
+    def initialize(reason)
+      @reason = reason
+    end
+    
+    def content
+      @reason[:content]
+    end
+    
+    def title
+      @reason[:title]
+    end
+    
+    def artist
+      @reason[:artist]
+    end
+    
+    def url
+      @reason[:title_url]
+    end
   end
   
   protected
