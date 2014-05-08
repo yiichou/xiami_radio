@@ -86,6 +86,7 @@ class XiamiFm
     @player.thread.join
   end
   
+  # TODO: 列表播放完时的处理
   def next
     @download.stop
     @queue += 1

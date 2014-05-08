@@ -3,7 +3,6 @@ require 'uri'
 class Track
   def initialize(track)
     @track = track
-    File.new('track.txt','wb') << @track
   end
   
   def title
