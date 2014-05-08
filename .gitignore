@@ -22,3 +22,7 @@ doc/
 .DS_Store
 .idea
 .secret
+
+# Others
+sign.rb
+ichou.yaml

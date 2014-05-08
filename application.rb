@@ -90,7 +90,15 @@ class XiamiFm
   def next
     @download.stop
     @queue += 1
-    play
+    
+    if @queue < @list.length
+      XiamiFm.logger.debug("当前播放 #{@queue}")
+      play
+    else
+      @list = nil
+      @queue = 0
+      play
+    end
   end
   
   def self.logger
