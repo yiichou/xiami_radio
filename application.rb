@@ -29,8 +29,10 @@ class XiamiFm
   def track(hash)
     @track = Track.new(hash)
     
-    hd_url = @radio.get_hd(@track.song_id)
-    @track.location(hd_url)
+    if HdSwitch === "on"
+      hd_url = @radio.get_hd(@track.song_id)
+      @track.location(hd_url)
+    end
   end
   
   def create_player

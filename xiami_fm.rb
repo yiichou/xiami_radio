@@ -14,6 +14,8 @@ require_relative 'application'
 
 # 用户的 member_auth， 可从虾米网页的 cookie 中获取
 MemberAuth = #ur_member_auth_code#
+# 是否开启 320K
+HdSwitch = "off"
 
 trap('INT') { puts "\nClosing" ; exit }
 
