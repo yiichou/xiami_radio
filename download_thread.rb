@@ -13,9 +13,7 @@ class DownloadThread
   def start!
     @thread = Thread.start do
       begin
-        log :start
         Net::HTTP.get_response(@url) do |res|
-          log "response: #{res.code}"
           raise res.body if res.code != '200'
           
           @total = res.header['Content-Length'].to_i
@@ -26,6 +24,7 @@ class DownloadThread
             @file.close if @progress == @total
           end
         end
+        log :compete
       rescue => e
         log e.message
       end

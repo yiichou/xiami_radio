@@ -21,7 +21,7 @@ class View
     Curses.attron(Curses.color_pair(Curses::COLOR_RED)|Curses::A_NORMAL){
       Curses.addstr("  #{track.title} - #{track.artist}  ")
     }
-    Curses.addstr('    按"L"加入收藏，按"M"查看详情 ')
+    Curses.addstr('    按"L"加入收藏 ')
     Curses.setpos(1, 0)
     Curses.addstr("_" * p + "#" * d + " " * (Curses.cols - p - d))
     Curses.setpos(2, 0)
@@ -30,9 +30,21 @@ class View
     Curses.addstr("- #{track.reason.artist} ") unless track.reason.artist.nil?
     Curses.addstr("    播放进度: ")
     Curses.attron(Curses.color_pair(Curses::COLOR_CYAN)|Curses::A_NORMAL){
-      Curses.addstr(" #{position.ceil} / #{track.duration} ")
+      Curses.addstr(" #{min(position.ceil)} / #{min(track.duration)} ")
     }
     Curses.refresh
+  end
+  
+  protected
+  
+  def min(sec)
+    min = sec.to_i.divmod(60)
+    if min[0] == 0
+      sec
+    else
+      lin = min[1] < 10 ? ":0" : ":"
+      min[0].to_s + lin + min[1].to_s
+    end
   end
 
 end

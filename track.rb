@@ -2,6 +2,7 @@ require 'uri'
 
 class Track
   def initialize(track)
+    log track[:title]
     @track = track
   end
   
@@ -80,6 +81,10 @@ class Track
     end
 
     URI.decode(true_url).gsub("^","0")
+  end
+  
+  def log(s)
+    XiamiFm.logger.debug("Track          #{s}")
   end
   
 end

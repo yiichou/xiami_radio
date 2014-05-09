@@ -42,7 +42,7 @@ class XiamiFm
       
       if down_rate - play_rate < 0.02 && down_rate < 0.98
         @player.toggle
-        sleep 2
+        sleep 1
         @player.toggle
       end
       
@@ -86,19 +86,13 @@ class XiamiFm
     @player.thread.join
   end
   
-  # TODO: 列表播放完时的处理
   def next
     @download.stop
     @queue += 1
     
-    if @queue < @list.length
-      XiamiFm.logger.debug("当前播放 #{@queue}")
-      play
-    else
-      @list = nil
-      @queue = 0
-      play
-    end
+    (@queue = 0) && @list = nil unless @queue < @list.length
+
+    play
   end
   
   def self.logger

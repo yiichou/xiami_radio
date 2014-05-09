@@ -11,7 +11,7 @@ class Radio
     "Accept" => "*/*",
     "Accept-Encoding" => "text/html",
     "Accept-Language" => "en-US,en;q=0.8,zh;q=0.6,zh-TW;q=0.4",
-    "Cookie" => "member_auth=1WuYGtxL6mFvhfPCRI9kIXUY4rbTHTeBx40BirYk5AMkcYwJNteswauVRQtJ0SeVkY6wtGU1Rg",
+    "Cookie" => "member_auth=#{MemberAuth}",
     "Referer" => "http://www.xiami.com/radio/play/id/2",
     "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 Safari/537.36"
     }
@@ -34,6 +34,7 @@ class Radio
   end
   
   def get
+    log 'get-list'
     url = URI.parse("http://www.xiami.com/radio/xml/type/8/id/0?v=#{Time.now.to_i}")
     res = request(url)
     
@@ -55,6 +56,7 @@ class Radio
   end
   
   def fav(track_id)
+    log "add-to-favorite"
     url = URI.parse("http://www.xiami.com/song/fav?ids=#{track_id}&_xiamitoken=#{@cookies[0]}")
     request(url)
   end
@@ -62,6 +64,10 @@ class Radio
   def record(track_id)
     url = URI.parse("http://www.xiami.com/count/playrecord?sid=#{track_id}&type=10&ishq=1")
     request(url)
+  end
+  
+  def log(s)
+    XiamiFm.logger.debug("Raido          #{s}")
   end
   
 end
