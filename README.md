@@ -35,6 +35,8 @@ ruby xiami_fm.rb
 ```
 brew install portaudio
 brew install mpg123
+cd path/to/xiami_fm
+bundle install
 ```
 
 
@@ -42,6 +44,8 @@ brew install mpg123
 ```
 apt-get install libjack0 libjack-dev
 apt-get install libportaudiocpp0 portaudio19-dev libmpg123-dev
+cd path/to/xiami_fm
+bundle install
 ```
 
 ## Audite

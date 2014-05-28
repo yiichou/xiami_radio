@@ -1,0 +1,19 @@
+GEM
+  remote: http://ruby.taobao.org/
+  specs:
+    audite (0.3.0)
+    curses (1.0.1)
+    mini_portile (0.6.0)
+    nokogiri (1.6.2.1)
+      mini_portile (= 0.6.0)
+    nori (2.4.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  audite
+  curses
+  mini_portile
+  nokogiri
+  nori

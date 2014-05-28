@@ -63,7 +63,8 @@ class Radio
   
   def record(track_id)
     url = URI.parse("http://www.xiami.com/count/playrecord?sid=#{track_id}&type=10&ishq=1")
-    request(url)
+    res = request(url)
+    log "record-limited" unless res.code == "200"
   end
   
   def log(s)
