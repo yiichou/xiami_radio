@@ -14,17 +14,22 @@ class DownloadThread
     @thread = Thread.start do
       begin
         Net::HTTP.get_response(@url) do |res|
-          raise res.body if res.code != '200'
+          if res.code == "302"
+            @url = URI.parse(res.header['Location'])
+            start!
+          else
+            raise res.body if res.code != '200'
           
-          @total = res.header['Content-Length'].to_i
+            @total = res.header['Content-Length'].to_i
           
-          res.read_body do |chunk|
-            @progress += chunk.size
-            @file << chunk
-            @file.close if @progress == @total
+            res.read_body do |chunk|
+              @progress += chunk.size
+              @file << chunk
+              @file.close if @progress == @total
+            end
+            log :compete
           end
         end
-        log :compete
       rescue => e
         log e.message
       end
