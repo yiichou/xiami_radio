@@ -12,7 +12,7 @@ class View
     Curses.clear
   end
   
-  def playing(track, position, down_rate)
+  def playing(track, position, down_rate, msg)
     p = (position / track.duration.to_f * Curses.cols).ceil
     d = (down_rate * Curses.cols).ceil - p
     Curses.clear
@@ -32,6 +32,10 @@ class View
     Curses.attron(Curses.color_pair(Curses::COLOR_CYAN)|Curses::A_NORMAL){
       Curses.addstr(" #{min(position.ceil)} / #{min(track.duration)} ")
     }
+    unless msg.nil?
+      Curses.setpos(3, 0)
+      Curses.addstr(msg)
+    end
     Curses.refresh
   end
   
@@ -45,6 +49,10 @@ class View
       lin = min[1] < 10 ? ":0" : ":"
       min[0].to_s + lin + min[1].to_s
     end
+  end
+  
+  def log(s)
+    XiamiFm.logger.debug("View           #{s}")
   end
 
 end

@@ -64,9 +64,19 @@ class Radio
   end
   
   def fav(track_id)
-    log "add-to-favorite"
     url = URI.parse("http://www.xiami.com/song/fav?ids=#{track_id}&_xiamitoken=#{@cookies[0]}")
-    request(url)
+    res = request(url)
+    msg = '操作失败 (╯‵□′)╯︵┻━┻'
+    
+    if res.code == "200"
+      res = /player_collected.*?;/.match(res.body)
+      msg = "已添加到音乐库" if res[0][18,1] == "1"
+      msg = "已从音乐库中移除" if res[0][18,1] == "0"
+    else
+      log "set-fav-limited"
+    end
+    
+    msg
   end
   
   def record(track_id)

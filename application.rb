@@ -14,6 +14,7 @@ class XiamiFm
     @folder = File.expand_path("./cache")
     @radio = Radio.new
     @queue = 0
+    @msg = nil
     create_player
     
     Dir.mkdir(@folder) unless File.exist?(@folder)
@@ -48,7 +49,7 @@ class XiamiFm
         @player.toggle
       end
       
-      @view.playing(@track, position, down_rate)
+      @view.playing(@track, position, down_rate, @msg)
     end
 
     @player.events.on(:complete) do
@@ -70,7 +71,7 @@ class XiamiFm
     
     # Sometimes, we got the mp3 information without length from xiami
     # So, we need to calculate the length and fix it.
-    @track.duration(@player.length_in_seconds(@download.total)) if @track.duration.nil?
+    @track.duration(@player.length_in_seconds(@download.total)) if @track.duration == 0
     
     @player.start_stream
     
@@ -84,7 +85,8 @@ class XiamiFm
         @player.stop_stream
         self.next
       when 'l'
-        @radio.fav(@track.song_id)
+        msg = @radio.fav(@track.song_id)
+        send_msg(msg)
       when ' '
         @player.toggle
       end
@@ -95,6 +97,7 @@ class XiamiFm
   
   def next
     @download.stop
+    send_msg(nil)
     @queue += 1
     
     (@queue = 0) && @list = nil unless @queue < @list.length
@@ -102,8 +105,20 @@ class XiamiFm
     play
   end
   
+  def send_msg(msg)
+    @msg = msg
+    @msg && Thread.start do
+      sleep 3
+      @msg = nil
+    end
+  end
+  
   def self.logger
     @logger ||= Logger.new('debug.log')
+  end
+  
+  def log(s)
+    XiamiFm.logger.debug("application    #{s}")
   end
 
 end
