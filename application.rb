@@ -67,6 +67,11 @@ class XiamiFm
     @download = DownloadThread.new(@track.location, @file)
     
     @player.load(@file)
+    
+    # Sometimes, we got the mp3 information without length from xiami
+    # So, we need to calculate the length and fix it.
+    @track.duration(@player.length_in_seconds(@download.total)) if @track.duration.nil?
+    
     @player.start_stream
     
     while c = Curses.getch

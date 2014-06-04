@@ -144,8 +144,13 @@ class Audite
     samples_to_seconds(tell)
   end
  
-  def length_in_seconds
-    samples_to_seconds(length)
+  def length_in_seconds(total_size = nil)
+    unkown_sec = samples_to_seconds(length)
+    if unkown_sec > 6 || total_size.nil?
+      unkown_sec
+    else
+      total_size / File.size?(@file) * unkown_sec
+    end
   end
  
   def rewind(seconds = 2)
@@ -154,6 +159,12 @@ class Audite
  
   def forward(seconds = 2)
     seek(position + seconds)
+  end
+  
+  protected
+  
+  def log(s)
+    XiamiFm.logger.debug("Audit          #{s}")
   end
   
 end

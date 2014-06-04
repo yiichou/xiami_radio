@@ -27,8 +27,9 @@ class Track
     de_url(@track[:location])
   end
   
-  def duration
-    duration = @track[:length].to_i + 1
+  def duration(duration = nil)
+    @track[:length] = duration.ceil if duration
+    duration = @track[:length].to_i
   end
   
   def reason
