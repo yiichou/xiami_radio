@@ -20,8 +20,12 @@ class Radio
     if (res.code == '200')
       all_cookies = res.get_fields('set-cookie')
       @cookies = Array.new
-      all_cookies.each { | cookie | @cookies.push(cookie.split('; ')[0]) }
+      all_cookies.each { | cookie | 
+        @cookies.push(cookie.split('; ')[0]) 
+        @user_id = cookie[5..(cookie =~ /\%22/)-1] if (cookie.include?"user=")
+      }
       @headers['Cookie'] = @cookies.join('; ')
+      @headers['Referer'] = "http://www.xiami.com/radio/play/type/4/oid/#{@user_id}" unless XiamiCai == "on"
     end
   end
   
@@ -35,7 +39,11 @@ class Radio
   
   def get
     log 'get-list'
-    url = URI.parse("http://www.xiami.com/radio/xml/type/8/id/0?v=#{Time.now.to_i}")
+    if XiamiCai == "on"
+      url = URI.parse("http://www.xiami.com/radio/xml/type/8/id/0?v=#{Time.now.to_i}")
+    else
+      url = URI.parse("http://www.xiami.com/radio/xml/type/4/id/#{@user_id}?v=#{Time.now.to_i}")
+    end
     res = request(url)
     
     # 解析从 Anroid API 获取的json

@@ -32,6 +32,8 @@ class Track
   end
   
   def reason
+    @track[:reason] ||= {:content => "来自你的音乐库"}
+    
     Reason.new(@track[:reason])
   end
   
