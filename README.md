@@ -55,7 +55,9 @@ bundle install
 
 使用了 [Audite][1] 作为播放组件
 
-鉴于 Audite 的 gem 包比较老旧，所以直接采用了 github 上面的版本，并进行了少量的改动
+~~鉴于 Audite 的 gem 包比较老旧，所以直接采用了 github 上面的版本，并进行了少量的改动~~
+
+新版本 0.4 已经没问题了
 
 
   [1]: https://github.com/georgi/audite

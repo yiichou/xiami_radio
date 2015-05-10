@@ -1,8 +1,8 @@
 require 'logger'
 require 'net/http'
 require 'curses'
+require 'audite'
 
-require_relative 'audite'
 require_relative 'download_thread'
 require_relative 'view'
 require_relative 'radio'
