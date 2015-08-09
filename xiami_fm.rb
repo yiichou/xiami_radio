@@ -10,4 +10,4 @@ XiamiCai = "on"
 
 trap('INT') { puts "\nClosing" ; exit }
 
-xiami = XiamiFm.new.play
+XiamiFm.new.play

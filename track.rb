@@ -31,7 +31,11 @@ class Track
     @track[:length] = duration.ceil if duration
     duration = @track[:length].to_i
   end
-  
+
+  def grade?
+    @track[:grade].to_i == 1
+  end
+
   def reason
     @track[:reason] ||= {:content => "来自你的音乐库"}
     

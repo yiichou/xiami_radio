@@ -51,7 +51,7 @@ class Radio
     # @list = queue['status'] == 'ok' ? queue['radio']['songs'] : nil
     
     # 解析从 web 获取的 XML
-    nori = Nori.new(:convert_tags_to => lambda { |tag| tag.snakecase.to_sym })
+    nori = Nori.new(:convert_tags_to => -> (tag) { tag.snakecase.to_sym })
     hash = nori.parse(res.body)
     @list = hash[:play_list][:track_list][:track]
   end

@@ -1,5 +1,5 @@
 GEM
-  remote: https://ruby.taobao.org/
+  remote: http://ruby.taobao.org/
   specs:
     audite (0.4.0)
     curses (1.0.1)

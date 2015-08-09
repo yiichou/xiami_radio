@@ -21,7 +21,12 @@ class View
     Curses.attron(Curses.color_pair(Curses::COLOR_RED)|Curses::A_NORMAL){
       Curses.addstr("  #{track.title} - #{track.artist}  ")
     }
-    Curses.addstr('    按"L"加入收藏 ')
+
+    if track.grade?
+      Curses.addstr('    已收藏 ')
+    else
+      Curses.addstr('    按"L"加入收藏 ')
+    end
     Curses.setpos(1, 0)
     Curses.addstr("_" * p + "#" * d + " " * (Curses.cols - p - d))
     Curses.setpos(2, 0)
