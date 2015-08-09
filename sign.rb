@@ -19,7 +19,7 @@ end
 
 @users.each { |user|
   # 设定初次签到的时间
-  @s.every '1d', :first => '2014-xx-xx xx:xx:xx'  do
+  @s.every '1d', :first => "#{(Time.now+84600).strftime('%Y-%m-%d')} 00:13:00"  do
     sign(user)
   end
 }
