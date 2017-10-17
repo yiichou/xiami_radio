@@ -1,4 +1,4 @@
-source 'http://ruby.taobao.org'
+source 'https://gems.ruby-china.org'
 
 #---------------------------------------------------------------
 # OSX Install
@@ -13,7 +13,9 @@ source 'http://ruby.taobao.org'
 gem 'curses'
 gem 'audite'
 
-
-gem 'mini_portile'
 gem 'nokogiri'
 gem 'nori'
+
+gem 'http-cookie'
+
+gem 'byebug'

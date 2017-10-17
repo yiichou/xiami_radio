@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require './lib/xiami_radio/client'
+require './lib/xiami_radio/downloader'
+require './lib/xiami_radio/notice'
+require './lib/xiami_radio/player'
+require './lib/xiami_radio/radio'
+require './lib/xiami_radio/track'
+require './lib/xiami_radio/user'
+require './lib/xiami_radio/view/player'
+
+user = XiamiRadio::User.new
+user.login_by_email 'me@ichou.cn', '65***98' unless user.login?
+XiamiRadio::Player.play user.radio type: 8, oid: 0
