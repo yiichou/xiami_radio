@@ -4,16 +4,16 @@ module XiamiRadio
   # There is a player as you saw
   class Player
 
-    attr_reader :track, :next_track, :radio, :user
+    attr_reader :track, :next_track, :radio
 
     def initialize(radio:, _playlist: nil)
-      @radio, @user = radio, radio.client.user
+      @radio = radio
       @player = Audite.new
-      @view = View::Player.new self
+      @view = View::Player.new
 
       @player.events.on :position_change, &method(:position_change)
       @player.events.on :complete, &method(:complete)
-      @view.listen_on
+      @view.listen_on self
     end
 
     def play
@@ -25,6 +25,7 @@ module XiamiRadio
     end
 
     def next
+      @track.downloader.stop
       if @next_track.nil?
         @next_track = @radio.next_track
         @player.queue @next_track.file_path
@@ -48,14 +49,12 @@ module XiamiRadio
     private
 
     def position_change(position)
-      @view.refresh position
+      @view.refresh @track, position
 
       if @next_track.nil? && position / @track.duration > 0.7
-        Thread.start do
-          @track.record
           @next_track = @radio.next_track
           @player.queue @next_track.file_path
-        end
+          @track.record
       end
     end
 

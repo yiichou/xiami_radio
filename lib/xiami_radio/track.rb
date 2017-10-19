@@ -6,7 +6,7 @@ module XiamiRadio
       @info = track
       @title, @song_id, @album_name, @artist = track.values_at(:title, :song_id, :album_name, :artist)
       @radio = radio
-      @client = radio.client
+      @client = Client.new user: User.instance
     end
 
     def location(hd: false)

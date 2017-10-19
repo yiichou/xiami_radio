@@ -1,8 +1,10 @@
 require 'http-cookie'
+require 'singleton'
 
 module XiamiRadio
   # There is a user as you saw
   class User
+    include Singleton
     attr_reader :nick_name, :level, :user_id, :sign, :is_vip
     attr_accessor :cookie_jar
 
@@ -10,10 +12,6 @@ module XiamiRadio
       @cookie_jar = HTTP::CookieJar.new
       @cookie_jar.load cookie_file if File.exist? cookie_file
       get_user_info
-    end
-
-    def radio(**args)
-      XiamiRadio::Radio.new user: self, **args
     end
 
     def login?
@@ -52,11 +50,11 @@ module XiamiRadio
       cookie_jar.cookies.select { |c| c.name == '_xiamitoken' }.first&.value
     end
 
+    private
+
     def client
       @client ||= Client.new user: self
     end
-
-    private
 
     def login_client
       @l_client ||= Client.new user: self, host: Client::LOGIN_HOST

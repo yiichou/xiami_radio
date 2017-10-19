@@ -10,11 +10,10 @@ module XiamiRadio
       end
     end
 
-    attr_reader :track, :progress, :total, :file
+    attr_reader :track, :file
 
     def initialize(track)
       @track = track
-      @uri = URI @track.location
     end
 
     def filename
@@ -26,30 +25,32 @@ module XiamiRadio
     end
 
     def start
-      @thread = Thread.start do
-        Net::HTTP.get_response @uri do |res|
-          if res.code == '302'
-            @uri = URI res.header['Location']
-            start
-          else
-            @progress, @total = 0, res.header['Content-Length'].to_i
-            @file = File.open(filename, 'w')
-            res.read_body do |chunk|
-              @file << chunk
-              @progress += chunk.size
-              @file.close unless @progress < @total
-            end
-          end
-        end
-      end
+      @thread = Thread.start { request URI(@track.location) }
       sleep 0.1 until @progress.to_i > 0
     end
 
     def stop
       @thread&.exit
       @thread = nil
-      File.delete(@file)
+      File.delete(@file) if @file
     end
 
+    private
+
+    def request(uri)
+      Net::HTTP.get_response uri do |res|
+        if res.code == '302'
+          request URI(res.header['Location'])
+        else
+          @progress, @total = 0, res.header['Content-Length'].to_i
+          @file = File.open(filename, 'w')
+          res.read_body do |chunk|
+            @file << chunk
+            @progress += chunk.size
+            @file.close unless @progress < @total
+          end
+        end
+      end
+    end
   end
 end

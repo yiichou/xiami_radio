@@ -1,0 +1,59 @@
+#!/usr/bin/env ruby
+#coding=utf-8
+
+require 'bundler/setup'
+require 'tmpdir'
+require 'io/console'
+
+require './lib/xiami_radio/client'
+require './lib/xiami_radio/downloader'
+require './lib/xiami_radio/notice'
+require './lib/xiami_radio/player'
+require './lib/xiami_radio/radio'
+require './lib/xiami_radio/track'
+require './lib/xiami_radio/user'
+require './lib/xiami_radio/view/player'
+
+module XiamiRadio
+  TMP_DIR = File.join(Dir.tmpdir, 'xiami_radio').freeze
+  Thread.abort_on_exception = true
+
+  def self.mktmpdir
+    Dir.mkdir TMP_DIR, 0700 unless Dir.exist? TMP_DIR
+  end
+end
+
+XiamiRadio.mktmpdir
+
+user = XiamiRadio::User.instance
+email = unless user.login?
+          puts 'Plz keep empty if you don\'t want to login'
+          print 'Email: '
+          gets.chomp
+        end.to_s
+pwd = unless user.login? || email.empty?
+        print 'Password: '
+        STDIN.noecho(&:gets).chomp
+      end.to_s
+user.login_by_email email, pwd unless email.empty? || pwd.empty?
+
+puts 'Which radio do you want to listen?'
+puts '1/Enter - 虾米猜       2 - 个人电台      3 - 其他'
+
+radio_option = case gets.chomp[0]
+                 when nil
+                   {type: 8, oid: 0}
+                 when '1'
+                   {type: 8, oid: 0}
+                 when '2'
+                   user.login? ? {type: 4, oid: user.user_id} : {type: 8, oid: 0}
+                 else
+                   print 'type: '
+                   type = gets.chomp[0]
+                   print 'oid: '
+                   oid = gets.chomp
+                   {type: (type || 8).to_i, oid: oid.to_i}
+               end
+
+radio = XiamiRadio::Radio.new radio_option
+XiamiRadio::Player.play radio
