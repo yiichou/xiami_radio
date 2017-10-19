@@ -26,7 +26,7 @@ module XiamiRadio
     end
 
     def reason
-      @info[:reason] ||= {content: '来自你的音乐库'}
+      @info[:reason] ||= {content: '来自电台推送'}
       OpenStruct.new @info[:reason]
     end
 

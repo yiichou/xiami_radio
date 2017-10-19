@@ -3,14 +3,6 @@ require 'net/http'
 module XiamiRadio
   class Downloader
     class << self
-      def dir
-        @dir ||= begin
-          dir = File.join(Dir.tmpdir, 'xiami_radio')
-          Dir.mkdir dir, 0700 unless Dir.exist? dir
-          dir
-        end
-      end
-
       def circulator
         @circulator ||= Queue.new
         %w(甲 乙).map(&@circulator.method(:push)) if @circulator.empty?
@@ -26,7 +18,7 @@ module XiamiRadio
     end
 
     def filename
-      File.join self.class.dir, self.class.circulator.pop(true)
+      File.join XiamiRadio::TMP_DIR, self.class.circulator.pop(true)
     end
 
     def progress

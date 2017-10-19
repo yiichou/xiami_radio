@@ -3,14 +3,12 @@ require 'http-cookie'
 module XiamiRadio
   # There is a user as you saw
   class User
-    COOKIE_FILE = File.join(Dir.tmpdir, 'xiami_radio', '己').freeze
-
     attr_reader :nick_name, :level, :user_id, :sign, :is_vip
     attr_accessor :cookie_jar
 
     def initialize
       @cookie_jar = HTTP::CookieJar.new
-      @cookie_jar.load COOKIE_FILE if File.exist? COOKIE_FILE
+      @cookie_jar.load cookie_file if File.exist? cookie_file
       get_user_info
     end
 
@@ -20,11 +18,6 @@ module XiamiRadio
 
     def login?
       !user_id.to_s.empty?
-    end
-
-    def get_user_info
-      update client.get(client.uri path: '/index/home').dig(:data, :userInfo)
-      Notice.push "欢迎归来 #{nick_name}，当前已连续签到 #{sign[:persist_num]} 天", 5 if login?
     end
 
     def login_by_email(email, password)
@@ -43,7 +36,7 @@ module XiamiRadio
         'Content-Type' =>	'application/x-www-form-urlencoded; charset=UTF-8',
         'Referer' => page_uri.to_s
       }
-      @cookie_jar.save COOKIE_FILE
+      @cookie_jar.save cookie_file
       get_user_info
     end
 
@@ -51,7 +44,7 @@ module XiamiRadio
       uri = client.uri path: '/index/home'
       @cookie_jar.parse "member_auth=#{member_auth}; path=/; domain=.xiami.com", uri
       client.get uri, format: :head
-      @cookie_jar.save COOKIE_FILE
+      @cookie_jar.save cookie_file
       get_user_info
     end
 
@@ -63,14 +56,25 @@ module XiamiRadio
       @client ||= Client.new user: self
     end
 
+    private
+
     def login_client
-      @l_client ||= Client.new user: self, host: 'https://login.xiami.com'
+      @l_client ||= Client.new user: self, host: Client::LOGIN_HOST
+    end
+
+    def get_user_info
+      update client.get(client.uri path: '/index/home').dig(:data, :userInfo)
+      Notice.push "欢迎归来 #{nick_name}，当前已连续签到 #{sign[:persist_num]} 天", 10 if login?
     end
 
     def update(attrs)
       return false unless attrs.is_a? Hash
       @nick_name, @level, @user_id, @sign, @is_vip = attrs.values_at :nick_name, :level, :user_id, :sign, :isVip
       true
+    end
+
+    def cookie_file
+      File.join XiamiRadio::TMP_DIR, '己'
     end
   end
 end

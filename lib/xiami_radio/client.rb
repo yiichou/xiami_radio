@@ -7,6 +7,7 @@ module XiamiRadio
   # There is a client as you saw
   class Client
     HOST = 'http://www.xiami.com'.freeze
+    LOGIN_HOST = 'https://login.xiami.com'.freeze
     HEADERS = {
       'Accept' => '*/*',
       'Accept-Encoding' => '*',
@@ -47,7 +48,6 @@ module XiamiRadio
     private
 
     def request(uri, format, headers, &block)
-      p uri
       _headers = @headers.merge headers
       _headers.merge! 'Cookie' => HTTP::Cookie.cookie_value(user.cookie_jar.cookies uri)
       _headers.merge! 'X-Requested-With' => 'XMLHttpRequest' if %i(json xml).include? format

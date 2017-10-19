@@ -14,7 +14,7 @@ require './lib/xiami_radio/user'
 require './lib/xiami_radio/view/player'
 
 @u = XiamiRadio::User.new
-@u.login_by_member_auth 'Yp3aOk9ewVTZUWD25bEz6x0FQgdsulJ4PqHIhcXBvjC7im8NMGRSfyALKtorn1' unless @u.login?
+@u.login_by_member_auth 'your_xiami_member_auth_code_from_web_cookie' unless @u.login?
 @r = @u.radio type: 8, oid: 0
 @t = @r.next_track
 
