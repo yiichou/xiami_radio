@@ -26,11 +26,8 @@ module XiamiRadio
 
     def next
       @track.downloader.stop
-      if @next_track.nil?
-        @next_track = @radio.next_track
-        @player.queue @next_track.file_path
-      end
-      @track, @next_track = @next_track, nil
+      preload! unless preload?
+      unperload!
       @player.request_next_song
     end
 
@@ -51,15 +48,29 @@ module XiamiRadio
     def position_change(position)
       @view.refresh @track, position
 
-      if @next_track.nil? && position / @track.duration > 0.7
-          @next_track = @radio.next_track
-          @player.queue @next_track.file_path
-          @track.record
+      if !preload? && position / @track.duration > 0.7
+        preload!
+        @track.record
       end
     end
 
     def complete
-      @track, @next_track = @next_track, nil
+      @track, @preload_track = @preload_track, nil
+    end
+
+    def preload?
+      @preload_flag ||= false
+    end
+
+    def preload!
+      @preload_flag = true
+      @preload_track = @radio.next_track
+      @player.queue @preload_track.file_path
+    end
+
+    def unperload!
+      @preload_flag = false
+      @track, @preload_track = @preload_track, nil
     end
 
     def self.play(radio)
