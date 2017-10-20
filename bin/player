@@ -20,21 +20,20 @@ module XiamiRadio
 
   Thread.abort_on_exception = true
 
-  def self.init
-    mktmpdir
-    if debug?
-      $stderr.reopen File.join(TMP_DIR, '戊'), 'w'
-    else
-      $stderr.reopen '/dev/null', 'w'
+  class << self
+    def init
+      mktmpdir
+      stderr = debug? ? STDOUT : File.join(TMP_DIR, '戊')
+      $stderr.reopen stderr, 'w'
     end
-  end
 
-  def self.mktmpdir
-    Dir.mkdir TMP_DIR, 0700 unless Dir.exist? TMP_DIR
-  end
+    def mktmpdir
+      Dir.mkdir TMP_DIR, 0700 unless Dir.exist? TMP_DIR
+    end
 
-  def self.debug?
-    %w(1 true on).include? ENV.fetch('DEBUG', DEBUG)
+    def debug?
+      %w(1 true on).include? ENV.fetch('DEBUG', DEBUG)
+    end
   end
 end
 XiamiRadio.init

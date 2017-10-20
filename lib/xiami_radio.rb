@@ -18,7 +18,7 @@ module XiamiRadio
   class << self
     def init
       mktmpdir
-      stderr = debug? ? File.join(TMP_DIR, '戊') : '/dev/null'
+      stderr = debug? ? STDOUT : File.join(TMP_DIR, '戊')
       $stderr.reopen stderr, 'w'
     end
 
