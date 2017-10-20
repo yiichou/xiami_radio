@@ -4,7 +4,7 @@
 require 'xiami_radio'
 require 'io/console'
 
-user = XiamiRadio::User.new
+user = XiamiRadio::User.instance
 
 email = unless user.login?
           puts 'Plz keep empty if you don\'t want to login'
@@ -35,4 +35,4 @@ radio_option = case gets.chomp[0]
                    {type: (type || 8).to_i, oid: oid.to_i}
                end
 
-XiamiRadio::Player.play user.radio radio_option
+XiamiRadio::Player.play XiamiRadio::Radio.new(radio_option)
