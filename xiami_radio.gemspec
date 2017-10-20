@@ -10,8 +10,8 @@ Gem::Specification.new do |spec|
   spec.email       = ['me@ichou.cn']
   spec.license     = 'MIT'
 
-  spec.summary     = 'Xiami radio player with command-line on ruby'
-  spec.description = 'a command-line tool to help you listen Xiami radio via a geek way'
+  spec.summary     = 'a Xiami radio player by command-line on ruby'
+  spec.description = 'A Xiami radio player by command-line on ruby, help you listening to the Xiami via a geek way.'
   spec.homepage    = 'https://github.com/IvanChou/xiami_radio'
 
   spec.files        = Dir['{lib}/**/*'] + %w[MIT-LICENSE README.md]
