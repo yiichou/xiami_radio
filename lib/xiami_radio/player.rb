@@ -46,12 +46,12 @@ module XiamiRadio
     private
 
     def position_change(position)
-      @view.refresh @track, position
+      @view.refresh @track, position unless position > @track.duration
 
-      if !preload? && position / @track.duration > 0.7
+      Thread.start do
         preload!
         @track.record
-      end
+      end if !preload? && position / @track.duration > 0.7
     end
 
     def complete

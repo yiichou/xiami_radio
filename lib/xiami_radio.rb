@@ -11,10 +11,25 @@ require 'tmpdir'
 
 module XiamiRadio
   TMP_DIR = File.join(Dir.tmpdir, 'xiami_radio').freeze
+  DEBUG = false
 
-  def self.mktmpdir
-    Dir.mkdir TMP_DIR, 0700 unless Dir.exist? TMP_DIR
+  Thread.abort_on_exception = true
+
+  class << self
+    def init
+      mktmpdir
+      stderr = debug? ? File.join(TMP_DIR, '戊') : '/dev/null'
+      $stderr.reopen stderr, 'w'
+    end
+
+    def mktmpdir
+      Dir.mkdir TMP_DIR, 0700 unless Dir.exist? TMP_DIR
+    end
+
+    def debug?
+      %w(1 true on).include? ENV.fetch('DEBUG', DEBUG)
+    end
   end
 end
 
-XiamiRadio.mktmpdir
+XiamiRadio.init
