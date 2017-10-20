@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+#coding=utf-8
+
+require 'xiami_radio'
+require 'io/console'
+
+user = XiamiRadio::User.new
+
+email = unless user.login?
+          puts 'Plz keep empty if you don\'t want to login'
+          print 'Email: '
+          gets.chomp
+        end.to_s
+pwd = unless user.login? || email.empty?
+        print 'Password: '
+        STDIN.noecho(&:gets).chomp
+      end.to_s
+user.login_by_email email, pwd unless email.empty? || pwd.empty?
+
+puts 'Which radio do you want to listen?'
+puts '1/Enter - 虾米猜       2 - 个人电台      3 - 其他'
+
+radio_option = case gets.chomp[0]
+                 when nil
+                   {type: 8, oid: 0}
+                 when '1'
+                   {type: 8, oid: 0}
+                 when '2'
+                   user.login? ? {type: 4, oid: user.user_id} : {type: 8, oid: 0}
+                 else
+                   print 'type: '
+                   type = gets.chomp[0]
+                   print 'oid: '
+                   oid = gets.chomp
+                   {type: (type || 8).to_i, oid: oid.to_i}
+               end
+
+XiamiRadio::Player.play user.radio radio_option

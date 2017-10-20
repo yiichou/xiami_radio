@@ -8,10 +8,11 @@
 /.bundle
 
 # Ignore all logfiles and tempfiles.
-*.log
-/log/*.log
-/tmp
-/cache
+log/
+.ruby-version
+.byebug_history
+*.gem
+
 
 # Ignore other unneeded files.
 database.yml
