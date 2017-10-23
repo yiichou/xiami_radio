@@ -20,10 +20,15 @@ module XiamiRadio
       mktmpdir
       stderr = debug? ? STDOUT : File.join(TMP_DIR, '戊')
       $stderr.reopen stderr, 'w'
+      logger.level= debug? ? :debug : :warn
     end
 
     def mktmpdir
       Dir.mkdir TMP_DIR, 0700 unless Dir.exist? TMP_DIR
+    end
+
+    def logger
+      @logger ||= Logger.new File.join(TMP_DIR, '戊')
     end
 
     def debug?
