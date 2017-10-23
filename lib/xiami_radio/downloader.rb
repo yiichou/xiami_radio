@@ -21,7 +21,7 @@ module XiamiRadio
     end
 
     def progress
-      (@progress.to_f / @total.to_f).round(2) unless @progress.nil?
+      @progress.nil? ? 0.00 : (@progress.to_f / @total.to_f).round(2)
     end
 
     def start
