@@ -8,6 +8,7 @@ require 'xiami_radio/user'
 require 'xiami_radio/view/player'
 
 require 'tmpdir'
+require 'logger'
 
 module XiamiRadio
   TMP_DIR = File.join(Dir.tmpdir, 'xiami_radio').freeze
@@ -18,9 +19,9 @@ module XiamiRadio
   class << self
     def init
       mktmpdir
-      stderr = debug? ? STDOUT : File.join(TMP_DIR, '戊')
-      $stderr.reopen stderr, 'w'
-      logger.level= debug? ? :debug : :warn
+      mktmpdir
+      $stderr.reopen File.join(TMP_DIR, '戊'), 'w' unless debug?
+      logger.level = debug? ? :debug : :warn
     end
 
     def mktmpdir

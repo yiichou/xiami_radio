@@ -53,7 +53,6 @@ module XiamiRadio
       @view.refresh @track, position
 
       if !preload? && position / @track.duration > 0.7
-        sb
         @preloader = Thread.start do
           @next_track = @radio.next_track
           @player.queue @next_track.file_path

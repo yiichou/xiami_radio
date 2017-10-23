@@ -59,11 +59,11 @@ module XiamiRadio
       end
 
       def render_progress_line(play_rate, dawnload_rate)
-        p = (play_rate * cols).round
-        d = (dawnload_rate * cols).round - p
+        d_cols = [(dawnload_rate * cols).round, cols].min
+        p_cols = [(play_rate * cols).round, d_cols].min
         setpos(1, 0)
         clrtoeol
-        addstr('_' * p + '#' * d + ' ' * (cols - p - d))
+        addstr('_' * p_cols + '#' * (d_cols - p_cols) + ' ' * (cols - d_cols))
       end
 
       def render_info_line(track, position)

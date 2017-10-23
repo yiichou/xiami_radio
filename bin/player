@@ -24,9 +24,8 @@ module XiamiRadio
   class << self
     def init
       mktmpdir
-      stderr = debug? ? STDOUT : File.join(TMP_DIR, '戊')
-      $stderr.reopen stderr, 'w'
-      logger.level= debug? ? :debug : :warn
+      $stderr.reopen File.join(TMP_DIR, '戊'), 'w'
+      logger.level = debug? ? :debug : :warn
     end
 
     def mktmpdir
