@@ -9,7 +9,7 @@ module XiamiRadio
       @client = Client.new user: User.instance
     end
 
-    def location(hd: false)
+    def location(hd: true)
       hd ? decode_location(hd_location) : decode_location(@info[:location])
     end
 
@@ -36,20 +36,23 @@ module XiamiRadio
 
     def file_path
       @info[:file_path] ||= begin
-        downloader.start if downloader.file.nil?
+        downloader.start
+        sleep 0.1 while downloader.file.nil? || File.empty?(downloader.file)
         downloader.file.path
       end
     end
 
-    def record
-      uri = client.uri path: '/count/playrecord',
-                       query: URI.encode_www_form(sid: song_id, type: 1, ishq: 1)
-      client.get(uri, headers: radio.headers_referer, format: :js)
+    def record(point = 1)
+      uri = client.uri path: '/count/playrecord', query: URI.encode_www_form(
+        sid: song_id, type:10, start_point: point, _xiamitoken: client.user.xiami_token
+      )
+      client.get(uri, headers: radio.headers_referer, format: :xhtml)
     end
 
     def fav
-      uri = client.uri path: '/song/fav',
-                       query: URI.encode_www_form(ids: song_id, _xiamitoken: client.user.xiami_token)
+      uri = client.uri path: '/song/fav', query: URI.encode_www_form(
+        ids: song_id, _xiamitoken: client.user.xiami_token
+      )
       res = client.get(uri, headers: radio.headers_referer, format: :js)
 
       return '操作失败 (╯‵□′)╯︵┻━┻' unless res.code == '200'

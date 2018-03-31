@@ -25,8 +25,7 @@ module XiamiRadio
     end
 
     def start
-      @thread = Thread.start { request URI(@track.location) }
-      sleep 0.1 until @progress.to_i > 0
+      @thread ||= Thread.start { request URI(@track.location) }
     end
 
     def stop

@@ -3,19 +3,24 @@
 require "bundler/setup"
 
 require "irb"
+require "tmpdir"
 require "byebug"
 
 require './lib/xiami_radio/client'
 require './lib/xiami_radio/downloader'
+require './lib/xiami_radio/notice'
 require './lib/xiami_radio/player'
 require './lib/xiami_radio/radio'
 require './lib/xiami_radio/track'
 require './lib/xiami_radio/user'
 require './lib/xiami_radio/view/player'
 
-@u = XiamiRadio::User.new
+module XiamiRadio
+  TMP_DIR = File.join(Dir.tmpdir, 'xiami_radio').freeze
+end
+
+@u = XiamiRadio::User.instance
 @u.login_by_member_auth 'your_xiami_member_auth_code_from_web_cookie' unless @u.login?
-@r = @u.radio type: 8, oid: 0
-@t = @r.next_track
+@r = XiamiRadio::Radio.new type: 8, oid: 0
 
 IRB.start

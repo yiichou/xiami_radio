@@ -52,17 +52,19 @@ module XiamiRadio
     def position_change(position)
       @view.refresh @track, position
 
+      @track.record position.to_i if (120.0..120.1).include? position
+
       if !preload? && position / @track.duration > 0.7
         @preloader = Thread.start do
           @next_track = @radio.next_track
           @player.queue @next_track.file_path
-          @track.record
         end
       end
     end
 
     def complete
       @track, @next_track = @next_track, nil
+      @track.record
     end
 
     def preload?

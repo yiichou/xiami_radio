@@ -50,7 +50,7 @@ module XiamiRadio
     def request(uri, format, headers, &block)
       _headers = @headers.merge headers
       _headers.merge! 'Cookie' => HTTP::Cookie.cookie_value(user.cookie_jar.cookies uri)
-      _headers.merge! 'X-Requested-With' => 'XMLHttpRequest' if %i(json xml).include? format
+      _headers.merge! 'X-Requested-With' => 'XMLHttpRequest' if %i(json xml xhtml).include? format
 
       res = block.call _headers
 
