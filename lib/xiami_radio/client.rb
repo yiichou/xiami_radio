@@ -6,7 +6,7 @@ require 'http-cookie'
 module XiamiRadio
   # There is a client as you saw
   class Client
-    HOST = 'http://www.xiami.com'.freeze
+    HOST = 'https://www.xiami.com'.freeze
     LOGIN_HOST = 'https://login.xiami.com'.freeze
     HEADERS = {
       'Accept' => '*/*',
