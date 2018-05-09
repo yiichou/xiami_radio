@@ -20,19 +20,19 @@ A Xiami radio player by command-line on ruby.
 
 ## Usage
 
-```
+```sh
 $ gem install xiami_radio
 ```
 
 and then
 
-```
+```sh
 $ xiaomi_radio
 ```
 
 you can also pass `-d` to make it run in background
 
-```
+```sh
 # run xiaomi_radio in background
 $ xiaomi_radio -d
 
@@ -53,14 +53,15 @@ Enjoy yourself ~
 
 ## OSX Install
 
-```
+```sh
 brew install portaudio
 brew install mpg123
 ```
 
 
 ## Debian / Ubuntu Install
-```
+
+```sh
 apt-get install libjack0 libjack-dev
 apt-get install libportaudiocpp0 portaudio19-dev libmpg123-dev
 ```
@@ -68,7 +69,5 @@ apt-get install libportaudiocpp0 portaudio19-dev libmpg123-dev
 ## Audite
 
 使用了 [Audite][1] 作为播放组件
-
-
 
   [1]: https://github.com/georgi/audite
