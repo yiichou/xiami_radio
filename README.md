@@ -30,6 +30,19 @@ and then
 $ xiaomi_radio
 ```
 
+you can also pass `-d` to make it run in background
+
+```
+# run xiaomi_radio in background
+$ xiaomi_radio -d
+
+# play next song
+$ xiaomi_radio next
+
+# stop
+$ xiaomi_radio stop
+```
+
 Enjoy yourself ~
 
 ## Requirements

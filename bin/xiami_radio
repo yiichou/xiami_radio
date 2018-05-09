@@ -3,36 +3,74 @@
 
 require 'xiami_radio'
 require 'io/console'
+require 'daemons'
+
+daemons_opts = {
+  app_name: 'xiami_radio',
+  dir_mode: :normal,
+  dir: XiamiRadio::TMP_DIR,
+  log_output: XiamiRadio.debug?,
+  output_logfilename: '辛'
+}
+
+def send_next_signal(app)
+  Process.kill :SIGUSR1, app.pid.pid
+end
+
+case ARGV[0]
+when 'stop', 'status'
+  Daemons.run_proc 'xiami_radio', daemons_opts
+  exit
+when 'next'
+  Daemons.run_proc 'xiami_radio', daemons_opts.merge(ARGV: ['status'], show_status_callback: :send_next_signal)
+  exit
+end
+
+
+args = ARGV.select { |arg| /^[a-zA-Z]+=.+/ === arg }.inject({}) do |res, arg|
+  k, v = arg.split("=")
+  res.merge k.to_sym => v
+end
+original_argv = ARGV.dup
+ARGV.clear
 
 user = XiamiRadio::User.instance
+unless user.login?
+  email, pwd = args[:email].to_s, args[:pwd].to_s
+  if email.empty? || pwd.to_s.empty?
+    puts 'Plz keep empty if you don\'t want to login'
+    print 'Email: '
+    email = gets.chomp.to_s
+    pwd = unless email.empty?
+      print 'Password: '
+      STDIN.noecho(&:gets).chomp
+    end.to_s
+  end
+  user.login_by_email(email, pwd) unless email.to_s.empty? || pwd.to_s.empty?
+end
 
-email = unless user.login?
-          puts 'Plz keep empty if you don\'t want to login'
-          print 'Email: '
-          gets.chomp
-        end.to_s
-pwd = unless user.login? || email.empty?
-        print 'Password: '
-        STDIN.noecho(&:gets).chomp
-      end.to_s
-user.login_by_email email, pwd unless email.empty? || pwd.empty?
+if args[:type].to_s.empty? || args[:oid].to_s.empty?
+  puts 'Which radio do you want to listen?'
+  puts '1/Enter - 虾米猜       2 - 个人电台      3 - 其他'
+  case gets.chomp[0]
+  when '2'
+    radio_type, radio_oid = user.login? ? [4, user.user_id] : [8, 0]
+  when '3'
+    print 'type: '
+    radio_type = gets.chomp.to_i
+    print 'oid: '
+    radio_oid = gets.chomp.to_i
+  else
+    radio_type, radio_oid = 8, 0
+  end
+else
+  radio_type, radio_oid = args[:type].to_i, args[:oid].to_i
+end
 
-puts 'Which radio do you want to listen?'
-puts '1/Enter - 虾米猜       2 - 个人电台      3 - 其他'
-
-radio_option = case gets.chomp[0]
-                 when nil
-                   {type: 8, oid: 0}
-                 when '1'
-                   {type: 8, oid: 0}
-                 when '2'
-                   user.login? ? {type: 4, oid: user.user_id} : {type: 8, oid: 0}
-                 else
-                   print 'type: '
-                   type = gets.chomp[0]
-                   print 'oid: '
-                   oid = gets.chomp
-                   {type: (type || 8).to_i, oid: oid.to_i}
-               end
-
-XiamiRadio::Player.play XiamiRadio::Radio.new(radio_option)
+if original_argv.include? '-d'
+  Daemons.run_proc 'xiami_radio', daemons_opts.merge(ARGV: ['start']) do
+    XiamiRadio::Player.play XiamiRadio::Radio.new(type: radio_type, oid: radio_oid)
+  end
+else
+  XiamiRadio::Player.play XiamiRadio::Radio.new(type: radio_type, oid: radio_oid)
+end

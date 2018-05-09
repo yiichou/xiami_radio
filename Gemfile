@@ -19,3 +19,5 @@ gem 'nori'
 gem 'http-cookie'
 
 gem 'byebug'
+
+gem 'daemons'

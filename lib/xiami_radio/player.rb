@@ -14,6 +14,8 @@ module XiamiRadio
       @player.events.on :position_change, &method(:position_change)
       @player.events.on :complete, &method(:complete)
       @view.listen_on self
+
+      trap(:SIGUSR1) { self.next }
     end
 
     def play
