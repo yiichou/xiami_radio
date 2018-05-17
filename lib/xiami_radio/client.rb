@@ -2,6 +2,7 @@ require 'net/http'
 require 'json'
 require 'nori'
 require 'http-cookie'
+require 'openssl'
 
 module XiamiRadio
   # There is a client as you saw
@@ -22,8 +23,10 @@ module XiamiRadio
       @headers = HEADERS.merge headers
       @uri = URI.parse host
 
-      # @http = Net::HTTP.new(@uri.host, @uri.port, '127.0.0.1', '8888')
       @http = Net::HTTP.new @uri.host, @uri.port
+      # -- OR --
+      # @http = Net::HTTP.new(@uri.host, @uri.port, '127.0.0.1', '8888')
+      # @http.verify_mode = ::OpenSSL::SSL::VERIFY_NONE
       @http.use_ssl = @uri.scheme == 'https'
     end
 

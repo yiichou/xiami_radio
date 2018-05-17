@@ -53,7 +53,9 @@ module XiamiRadio
     private
 
     def client
-      @client ||= Client.new user: self
+      @client ||= Client.new user: self, headers: {
+        referer:'https://www.xiami.com/index'
+      }
     end
 
     def login_client
