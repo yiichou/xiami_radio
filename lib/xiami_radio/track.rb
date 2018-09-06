@@ -42,11 +42,15 @@ module XiamiRadio
       end
     end
 
-    def record(point = 1)
-      uri = client.uri path: '/count/playrecord', query: URI.encode_www_form(
-        sid: song_id, type:10, start_point: point, _xiamitoken: client.user.xiami_token
-      )
-      client.get(uri, headers: radio.headers_referer, format: :xhtml)
+    def record(point = 1, async: true)
+      request_record = -> {
+        uri = client.uri path: '/count/playrecord', query: URI.encode_www_form(
+          sid: song_id, type:10, start_point: point, _xiamitoken: client.user.xiami_token
+        )
+        client.get(uri, headers: radio.headers_referer, format: :xhtml)
+      }
+
+      async ? Thread.start { request_record.call } : request_record.call
     end
 
     def fav
