@@ -1,8 +1,8 @@
 GEM
-  remote: https://gems.ruby-china.org/
+  remote: https://gems.ruby-china.com/
   specs:
     audite (0.4.0)
-    byebug (9.0.6)
+    byebug (10.0.2)
     curses (1.2.4)
     daemons (1.2.6)
     domain_name (0.5.20170404)
@@ -30,4 +30,4 @@ DEPENDENCIES
   nori
 
 BUNDLED WITH
-   1.16.1
+   1.16.4

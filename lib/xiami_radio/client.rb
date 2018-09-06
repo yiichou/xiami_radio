@@ -22,12 +22,7 @@ module XiamiRadio
       @user = user || User.new
       @headers = HEADERS.merge headers
       @uri = URI.parse host
-
-      @http = Net::HTTP.new @uri.host, @uri.port
-      # -- OR --
-      # @http = Net::HTTP.new(@uri.host, @uri.port, '127.0.0.1', '8888')
-      # @http.verify_mode = ::OpenSSL::SSL::VERIFY_NONE
-      @http.use_ssl = @uri.scheme == 'https'
+      init_http
     end
 
     def uri(**args)
@@ -46,6 +41,14 @@ module XiamiRadio
         req.set_form_data form_data
         @http.start { |http| http.request req }
       end
+    end
+
+    def init_http
+      @http = Net::HTTP.new @uri.host, @uri.port
+      # -- OR --
+      # @http = Net::HTTP.new(@uri.host, @uri.port, '127.0.0.1', '8888')
+      # @http.verify_mode = ::OpenSSL::SSL::VERIFY_NONE
+      @http.use_ssl = @uri.scheme == 'https'
     end
 
     private

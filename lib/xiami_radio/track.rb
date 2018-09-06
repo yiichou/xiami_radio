@@ -43,10 +43,14 @@ module XiamiRadio
     end
 
     def record(point = 1)
-      uri = client.uri path: '/count/playrecord', query: URI.encode_www_form(
-        sid: song_id, type:10, start_point: point, _xiamitoken: client.user.xiami_token
-      )
-      client.get(uri, headers: radio.headers_referer, format: :xhtml)
+      Thread.start do
+        client.init_http
+        uri = client.uri path: '/count/playrecord', query: URI.encode_www_form(
+          sid: song_id, type:10, start_point: point, _xiamitoken: client.user.xiami_token
+        )
+        client.get(uri, headers: radio.headers_referer, format: :xhtml)
+        XiamiRadio.logger.debug "#{title} record completed"
+      end
     end
 
     def fav
