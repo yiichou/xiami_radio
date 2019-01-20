@@ -41,7 +41,7 @@ module XiamiRadio
         if res.code == '302'
           request URI(res.header['Location'])
         else
-          XiamiRadio.logger.debug "#{@track.title} download start"
+          XiamiRadio.logger.info "#{@track.title} download start"
           @progress, @total = 0, res.header['Content-Length'].to_i
           @file = File.open(filename, 'w')
           res.read_body do |chunk|
@@ -51,7 +51,7 @@ module XiamiRadio
           end
         end
       end
-      XiamiRadio.logger.debug "#{@track.title} download completed"
+      XiamiRadio.logger.info "#{@track.title} download completed"
     end
   end
 end

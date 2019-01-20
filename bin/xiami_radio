@@ -5,6 +5,8 @@ require 'xiami_radio'
 require 'io/console'
 require 'daemons'
 
+XiamiRadio.init
+
 daemons_opts = {
   app_name: 'xiami_radio',
   dir_mode: :normal,
@@ -17,15 +19,24 @@ def send_next_signal(app)
   Process.kill :SIGUSR1, app.pid.pid
 end
 
-case ARGV[0]
-when 'stop', 'status'
-  Daemons.run_proc 'xiami_radio', daemons_opts
-  exit
-when 'next'
-  Daemons.run_proc 'xiami_radio', daemons_opts.merge(ARGV: ['status'], show_status_callback: :send_next_signal)
-  exit
+def send_which_signal(app)
+  File.delete XiamiRadio.track_info_swap
+  Process.kill :SIGUSR2, app.pid.pid
+  sleep 0.1
+  puts File.read XiamiRadio.track_info_swap
 end
 
+if ARGV[0] == '-s'
+  case ARGV[1]
+  when 'stop', 'status'
+    Daemons.run_proc 'xiami_radio', daemons_opts.merge(ARGV: ARGV[1..-1])
+  when 'next'
+    Daemons.run_proc 'xiami_radio', daemons_opts.merge(ARGV: ['status'], show_status_callback: :send_next_signal)
+  when 'name', 'which', 'what'
+    Daemons.run_proc 'xiami_radio', daemons_opts.merge(ARGV: ['status'], show_status_callback: :send_which_signal)
+  end
+  exit
+end
 
 args = ARGV.select { |arg| /^[a-zA-Z]+=.+/ === arg }.inject({}) do |res, arg|
   k, v = arg.split("=")
@@ -68,7 +79,14 @@ else
 end
 
 if original_argv.include? '-d'
+  if RUBY_PLATFORM.include?('x86_64-darwin') && ENV['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] != 'YES'
+    puts "Plz setup OBJC_DISABLE_INITIALIZE_FORK_SAFETY firstly:"
+    puts "  export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES"
+    return
+  end
+
   Daemons.run_proc 'xiami_radio', daemons_opts.merge(ARGV: ['start']) do
+    XiamiRadio.init
     XiamiRadio::Player.play XiamiRadio::Radio.new(type: radio_type, oid: radio_oid)
   end
 else

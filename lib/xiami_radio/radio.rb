@@ -6,13 +6,12 @@ module XiamiRadio
 
     XIAMI_CAI = {type: 8, oid: 0}.freeze
 
-    attr_reader :type, :oid, :nori, :play_queue, :client
+    attr_reader :type, :oid, :play_queue, :client
 
     def initialize(type:, oid:)
       @type = type
       @oid = oid
       @client = Client.new user: User.instance
-      @nori = Nori.new(:convert_tags_to => -> (tag) { tag.snakecase.to_sym })
       @play_queue = []
     end
 

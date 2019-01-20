@@ -16,6 +16,11 @@ module XiamiRadio
       @view.listen_on self
 
       trap(:SIGUSR1) { self.next }
+      trap(:SIGUSR2) do
+        File.open(XiamiRadio.track_info_swap, 'w') do |f|
+          f.puts "#{self.track.title} - #{self.track.artist} - #{self.track.album_name}"
+        end
+      end
     end
 
     def play
@@ -28,7 +33,7 @@ module XiamiRadio
 
     def next
       @track.downloader.stop
-      if preload?
+      if preloading?
         @track, @next_track = @next_track, nil
       else
         @track = @radio.next_track
@@ -54,9 +59,9 @@ module XiamiRadio
     def position_change(position)
       @view.refresh @track, position
 
-      @track.record position.to_i if (120.0..120.1).include? position
+      @track.record position.to_i if (120.0..123.0).include? position
 
-      if !preload? && position / @track.duration > 0.7
+      if !preloading? && position / @track.duration > 0.8
         @preloader = Thread.start do
           @next_track = @radio.next_track
           @player.queue @next_track.file_path
@@ -65,13 +70,12 @@ module XiamiRadio
     end
 
     def complete
-      @track, @next_track = @next_track, nil
       @track.record
+      @track, @next_track = @next_track, nil
     end
 
-    def preload?
-      return true unless @next_track.nil?
-      !@preloader.nil? && @preloader.alive?
+    def preloading?
+      !@next_track.nil? || @preloader&.alive?
     end
 
     def self.play(radio)
