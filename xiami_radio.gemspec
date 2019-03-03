@@ -22,7 +22,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'curses',      '~> 1.2'
   spec.add_dependency 'http-cookie', '~> 1.0'
   spec.add_dependency 'nori',        '~> 2.6'
-  spec.add_dependency 'daemons',     '~> 1.2'
+  spec.add_dependency 'nokogiri',    '~> 1.10'
+  spec.add_dependency 'daemons',     '~> 1.3'
 
   spec.add_development_dependency 'byebug', '~> 9.0'
 end
